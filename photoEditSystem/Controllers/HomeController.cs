@@ -79,11 +79,30 @@ namespace photoEditSystem.Controllers
                              
                 // 儲存檔案
                 File1.SaveAs(savedPhotoName);
-                
-                // 合併外框
-                //string resultPathFileName = directoryPath.CombinImage(savedBorderPhotoName, savedPhotoName); // 相框  照片
-                string resultPathFileName = directoryPath.CombinImage(savedPhotoName, savedBorderPhotoName);  // 相框  照片
-                 TempData["Message"] = "上傳成功";
+
+                // 剪裁 & 縮放 
+                string thumbPicOutName = Guid.NewGuid() + "_New_" + File1.FileName;
+                string thumbPicOutPath = Path.Combine(Server.MapPath("~/tempPhoto/photo"), thumbPicOutName);
+                string imgBackgorund = ""; // 合成背景圖
+                if (borderStyle == "StraightStyle")
+                {
+                    // 直
+                    directoryPath.SaveThumbPicHeight(savedPhotoName,1500, thumbPicOutPath);
+                    // 判斷使用的合成背景圖版
+                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight.png");
+                }
+                else if (borderStyle == "HorizontalStyle")
+                {
+                    // 橫
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1480, thumbPicOutPath);
+                    // 判斷使用的合成背景圖版
+                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal.png");
+                }
+                savedPhotoName = thumbPicOutPath;
+                // 合併外框              
+                string resultPathFileName = directoryPath.CombinImage(savedPhotoName, savedBorderPhotoName, borderStyle, imgBackgorund);  // 照片 相框  
+                //string resultPathFileName = directoryPath.CombinImage(savedBorderPhotoName, savedPhotoName, borderStyle);  // 相框  照片
+                TempData["Message"] = "上傳成功";
                 // 儲存檔名(照片、外框、結果)
                 directoryPath.file1PathFileName = photoName;
                 directoryPath.fileBorderPathFileName = borderName;

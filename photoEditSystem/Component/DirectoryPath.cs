@@ -41,20 +41,35 @@ namespace photoEditSystem.Component
         /// 合併照片
         /// 背景圖，中間貼自己的目標圖片
         /// </summary>
-        /// <param name="sourceImg">相框圖片</param>
-        /// <param name="destImg">照片圖片</param>
-        public string CombinImage(string sourceImg, string destImg)
+        /// <param name="sourceImg">照片圖片</param>
+        /// <param name="destImg">相框圖片</param>
+        /// <param name="borderStyle">相框樣式</param>
+        /// <param name="imgBackgorund">背板</param>
+        public string CombinImage(string sourceImg, string destImg, string borderStyle, string imgBackgorund)
         {
             DateTime nowday = DateTime.Now;
             string resultFileName = "result_" + nowday.ToString("yyyy-MM-dd-HH-mm-ss");
-            Image imgBack = Image.FromFile(sourceImg); //相框圖片 
-            Image img = Image.FromFile(destImg); //照片圖片
-            //从指定的System.Drawing.Image创建新的System.Drawing.Graphics       
+            Image imgBack = Image.FromFile(imgBackgorund); // 底圖
+            Image imgBorder = Image.FromFile(destImg); //照片相框圖片
+            Image img = Image.FromFile(sourceImg); //照片圖片
+            //指定的System.Drawing.Image創建新的System.Drawing.Graphics       
             Graphics g = Graphics.FromImage(imgBack);
             //g.DrawImage(imgBack, 0, 0, 148, 124); // g.DrawImage(imgBack, 0, 0, 相框宽, 相框高);
-            //g.FillRectangle(Brushes.Black, 125, 50, (int)212, ((int)203));//相片四周刷一層黑色邊框，需要調尺寸
             //g.DrawImage(img, 照片與相框的左邊距, 照片與相框的上邊距, 照片寬, 照片高);
-            g.DrawImage(img, 125, 50, 1357, 1920);
+            // 判斷使用者選取borderStyle
+            if(borderStyle == "StraightStyle")
+            {
+                //g.FillRectangle(Brushes.Black, -50, -50, (int)1150, ((int)1500));//相片四周刷一層黑色邊框，需要調尺寸
+                g.DrawImage(img, 0, 0, img.Width, img.Height);
+                g.DrawImage(imgBorder, 0, 0, 1280, 1600);
+            }                
+            else if(borderStyle == "HorizontalStyle")
+            {
+                //g.FillRectangle(Brushes.Black, -50, -50, (int)1480, ((int)1100));//相片四周刷一層黑色邊框，需要調尺寸
+                g.DrawImage(img, 0, 0, img.Width, img.Height);
+                g.DrawImage(imgBorder, 0, 0, 1478, 1108);
+            }
+                
             GC.Collect();
             string saveResultImagePath = Path.Combine(HttpContext.Current.Server.MapPath("~/tempPhoto/result"), resultFileName + ".png");
             string saveResultImageFileName = resultFileName + ".png";
@@ -62,82 +77,240 @@ namespace photoEditSystem.Component
             imgBack.Save(saveResultImagePath);
             imgBack.Dispose();
             img.Dispose();
+            imgBorder.Dispose();
             return saveResultImageFileName;
         }
-        /// <summary>
-        /// 刪除檔案
-        /// </summary>
-        /// <param name="path"></param>
-        public void removeBg(string picture, string borderName)
-        {
-            Image image = Image.FromFile(picture);
-            using (Bitmap bitmap = new Bitmap(image))
-            {
-                bitmap.MakeTransparent(Color.White);
-                string saveResultImagePath = Path.Combine(HttpContext.Current.Server.MapPath("~/tempPhoto/border"), borderName);
-                bitmap.Save(@"C:\SideProject20211213\photoEditSystem\photoEditSystem\tempPhoto\photo\123.png");
-                bitmap.Dispose();
-            }
-        }
-       
-        public void removeBgApi(string picture)
-        {
-            using (var client = new HttpClient())
-            using (var formData = new MultipartFormDataContent())
-            {
-                formData.Headers.Add("X-Api-Key", "1bum8bKVNHG1yqGctHK8f4Rs");
-                formData.Add(new ByteArrayContent(File.ReadAllBytes(picture)), "image_file", "file.jpg");
-                formData.Add(new StringContent("auto"), "size");
-                var response = client.PostAsync("https://api.remove.bg/v1.0/removebg", formData).Result;
 
-                if (response.IsSuccessStatusCode)
+        /// <summary>
+        /// 放大或缩圖
+        /// </summary>
+        /// <param name="path_source">原始圖片路径</param>
+        /// <param name="path_save">縮圖路径</param>
+        /// <param name="times">缩略倍数</param>
+        /// <param name="b">缩圖或放大（true缩圖）</param>
+        public void Thumbnail(string path_source, int times, bool b)
+        {
+            //加载底圖
+            Image img = Image.FromFile(path_source);
+            string path_save = path_source.Substring(0, path_source.Length - path_source.Length) + "_new" + path_source;
+            int w = img.Width;
+            int h = img.Height;
+            //設置畫布
+            int width = 0;
+            int height = 0;
+            if (b)
+            {
+                width = w / times;
+                height = h / times;
+            }
+            else
+            {
+                width = w * times;
+                height = h * times;
+            }
+            Bitmap map = new Bitmap(width, height);
+            //繪圖
+            Graphics g = Graphics.FromImage(map);
+            g.DrawImage(img, 0, 0, width, height);
+            //保存
+            map.Save(path_save);
+
+        }
+
+        #region  取得圖片等比例縮圖後的寬和高像素
+        /// <summary>
+        ///  寬高誰較長就縮誰  - 計算方法
+        /// </summary>
+        /// <param name="bmp">System.Drawing.Image 的物件</param>
+        /// <param name="maxPx">寬或高超過多少像素就要縮圖</param>
+        /// <returns>回傳int陣列，索引0為縮圖後的寬度、索引1為縮圖後的高度</returns>
+        public int[] GetThumbPic_WidthAndHeight(Bitmap bmp, int maxPx)
+        {
+
+            int newWidth = 0;
+            int newHeight = 0;
+
+            if (bmp.Width > maxPx || bmp.Height > maxPx)
+            //如果圖片的寬大於最大值或高大於最大值就往下執行  
+            {
+
+                if (bmp.Width >= bmp.Height)
+                //圖片的寬大於圖片的高  
                 {
-                    FileStream fileStream = new FileStream(@"C:\SideProject20211213\photoEditSystem\photoEditSystem\tempPhoto\photo\no-bg.png", FileMode.Create, FileAccess.Write, FileShare.None);                    
-                    response.Content.CopyToAsync(fileStream).ContinueWith((copyTask) => { fileStream.Close(); });
+
+                    newHeight = Convert.ToInt32((Convert.ToDouble(maxPx) / Convert.ToDouble(bmp.Width)) * Convert.ToDouble(bmp.Height));
+                    //設定修改後的圖高  
+                    newWidth = maxPx;
                 }
                 else
                 {
-                    Console.WriteLine("Error: " + response.Content.ReadAsStringAsync().Result);
+
+                    newWidth = Convert.ToInt32((Convert.ToDouble(maxPx) / Convert.ToDouble(bmp.Height)) * Convert.ToDouble(bmp.Width));
+                    //設定修改後的圖寬  
+                    newHeight = maxPx;
                 }
             }
+            else
+            {//圖片沒有超過設定值，不執行縮圖   
+                newHeight = bmp.Height;
+                newWidth = bmp.Width;
+            }
+
+            int[] newWidthAndfixHeight = { newWidth, newHeight };
+
+            return newWidthAndfixHeight;
+        }
+
+
+        /// <summary>
+        /// 寬度維持maxWidth，高度等比例縮放   - 計算方法
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="maxWidth"></param>
+        /// <returns></returns>
+        public int[] GetThumbPic_Width(Bitmap bmp, int maxWidth)
+        {
+            //要回傳的結果
+            int newWidth = 0;
+            int newHeight = 0;
+
+            if (bmp.Width > maxWidth)
+            //如果圖片的寬大於最大值 
+            {
+
+                //等比例的圖高
+                newHeight = Convert.ToInt32((Convert.ToDouble(maxWidth) / Convert.ToDouble(bmp.Width)) * Convert.ToDouble(bmp.Height));
+                //設定修改後的圖寬  
+                newWidth = maxWidth;
+
+            }
+            else
+            {//圖片寬沒有超過設定值，不執行縮圖  
+
+                newHeight = bmp.Height;
+                newWidth = bmp.Width;
+            }
+
+            int[] newWidthAndfixHeight = { newWidth, newHeight };
+
+            return newWidthAndfixHeight;
+
         }
 
         /// <summary>
-        /// 圖片裁剪，生成新圖，保存在同一目錄下,名字加_new，格式1.png 新圖1_new.png
+        /// 高度維持maxHeight，寬度等比例縮放  - 計算方法
         /// </summary>
-        /// <param name="picPath">要修改圖片完整路徑</param>
-        /// <param name="x">修改起點x坐標</param>
-        /// <param name="y">修改起點y坐標</param>
-        /// <param name="width">新圖宽度</param>
-        /// <param name="height">新圖高度</param>
-        public static void caijianpic(string picPath, int x, int y, int width, int height)
+        /// <param name="bmp"></param>
+        /// <param name="maxHeight"></param>
+        /// <returns></returns>
+        public int[] GetThumbPic_Height(Bitmap bmp, int maxHeight)
         {
-            //圖片路径
-            string oldPath = picPath;
-            //新圖片路径
-            string newPath = System.IO.Path.GetExtension(oldPath);
-            //計算新的文件名，在舊文件名後加_new
-            newPath = oldPath.Substring(0, oldPath.Length - newPath.Length) + "_new" + newPath;
-            //定義截取矩形
-            System.Drawing.Rectangle cropArea = new System.Drawing.Rectangle(x, y, width, height);
-            //要截取的區域大小
-            //加载圖片
-            System.Drawing.Image img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(System.IO.File.ReadAllBytes(oldPath)));
-            //判断超出的位置否
-            if ((img.Width < x + width) || img.Height < y + height)
-            {              
-                img.Dispose();
-                return;
+            //要回傳的值
+            int newWidth = 0;
+            int newHeight = 0;
+
+            if (bmp.Height > maxHeight)
+            //如果圖片的高大於最大值 
+            {
+                //等比例的寬
+                newWidth = Convert.ToInt32((Convert.ToDouble(maxHeight) / Convert.ToDouble(bmp.Height)) * Convert.ToDouble(bmp.Width));
+                //圖高固定  
+                newHeight = maxHeight;
+
             }
-            //定義Bitmap对象
-            System.Drawing.Bitmap bmpImage = new System.Drawing.Bitmap(img);
-            //進行裁剪
-            System.Drawing.Bitmap bmpCrop = bmpImage.Clone(cropArea, bmpImage.PixelFormat);
-            //保存成新文件
-            bmpCrop.Save(newPath);
-            //释放對象
-            img.Dispose(); bmpCrop.Dispose();
+            else
+            {//圖片的高沒有超過設定值 
+
+                newHeight = bmp.Height;
+                newWidth = bmp.Width;
+            }
+
+            int[] newWidthAndfixHeight = { newWidth, newHeight };
+
+            return newWidthAndfixHeight;
+        }
+        #endregion
+
+        #region 產生縮圖並儲存
+        /// <summary>
+        /// 產生縮圖並儲存 寬高誰較長就縮誰
+        /// </summary>
+        /// <param name="srcImagePath">來源圖片的路徑</param>
+        /// <param name="maxPix">超過多少像素就要等比例縮圖</param>
+        /// <param name="saveThumbFilePath">縮圖的儲存檔案路徑</param>
+        public void SaveThumbPic(string srcImagePath, int maxPix, string saveThumbFilePath)
+        {
+            //讀取原始圖片 
+            using (FileStream fs = new FileStream(srcImagePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                //取得原始圖片 
+                Bitmap bmpOld = new Bitmap(fs);
+
+                // 計算維持比例的縮圖大小 
+                int[] thumbnailScaleWidth = GetThumbPic_WidthAndHeight(bmpOld, maxPix);
+                int newWidth = thumbnailScaleWidth[0];
+                int newHeight = thumbnailScaleWidth[1];
+
+                // 產生縮圖 
+                Bitmap bmpThumb = new Bitmap(bmpOld, newWidth, newHeight);
+                bmpThumb.Save(saveThumbFilePath);
+
+            }//end using 
         }
 
+        /// <summary>
+        /// 產生縮圖並儲存 寬度維持maxpix，高度等比例
+        /// </summary>
+        /// <param name="srcImagePath">來源圖片的路徑</param>
+        /// <param name="widthMaxPix">超過多少像素就要等比例縮圖</param>
+        /// <param name="saveThumbFilePath">縮圖的儲存檔案路徑</param>
+        public void SaveThumbPicWidth(string srcImagePath, int widthMaxPix, string saveThumbFilePath)
+        {
+            //讀取原始圖片 
+            using (FileStream fs = new FileStream(srcImagePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                //取得原始圖片 
+                Bitmap bmpOld = new Bitmap(fs);
+
+                //圖片寬高 
+                // 計算維持比例的縮圖大小 
+                int[] thumbnailScaleWidth = GetThumbPic_Width(bmpOld, widthMaxPix);
+                int newWidth = thumbnailScaleWidth[0];
+                int newHeight = thumbnailScaleWidth[1];
+
+                // 產生縮圖 
+                Bitmap bmpThumb = new Bitmap(bmpOld, newWidth, newHeight);
+                bmpThumb.Save(saveThumbFilePath);
+
+            }//end using
+        }
+
+        /// <summary>
+        /// 產生縮圖並儲存 高度維持maxPix，寬度等比例
+        /// </summary>
+        /// <param name="srcImagePath">來源圖片的路徑</param>
+        /// <param name="heightMaxPix">超過多少像素就要等比例縮圖</param>
+        /// <param name="saveThumbFilePath">縮圖的儲存檔案路徑</param>
+        public void SaveThumbPicHeight(string srcImagePath, int heightMaxPix, string saveThumbFilePath)
+        {
+            //讀取原始圖片 
+            using (FileStream fs = new FileStream(srcImagePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                //取得原始圖片 
+                Bitmap bmpOld = new Bitmap(fs);
+
+                // 計算維持比例的縮圖大小 
+                int[] thumbnailScaleWidth = GetThumbPic_Height(bmpOld, heightMaxPix);
+                int newWidth = thumbnailScaleWidth[0];
+                int newHeight = thumbnailScaleWidth[1];
+
+                // 產生縮圖 
+                Bitmap bmpThumb = new Bitmap(bmpOld, newWidth, newHeight);
+                bmpThumb.Save(saveThumbFilePath);
+
+            }//end using 
+        }
+
+        #endregion
     }
 }
