@@ -54,22 +54,46 @@ namespace photoEditSystem.Component
             Image img = Image.FromFile(sourceImg); //照片圖片
             //指定的System.Drawing.Image創建新的System.Drawing.Graphics       
             Graphics g = Graphics.FromImage(imgBack);
-            //g.DrawImage(imgBack, 0, 0, 148, 124); // g.DrawImage(imgBack, 0, 0, 相框宽, 相框高);
             //g.DrawImage(img, 照片與相框的左邊距, 照片與相框的上邊距, 照片寬, 照片高);
+            // 判斷照片圖片size是否大於背板版面
+            double drawPositionX = 0.0;
+            double drawPositionY = 0.0;
+            if (img.Width < imgBack.Width && img.Height < imgBack.Height)
+            {
+                // 寬跟高都小於背板
+                drawPositionX = (imgBack.Width / 2) - (img.Width / 2);
+                drawPositionY = (imgBack.Height / 2) - (img.Height / 2);
+            }
+            else if (img.Width < imgBack.Width)
+            {
+                // 寬小於背板 但 高一樣
+                drawPositionX = (imgBack.Width / 2) - (img.Width / 2);
+            }
+            else if (img.Height < imgBack.Height)
+            {
+                // 高小於背板 但 寬一樣
+                drawPositionY = (imgBack.Height / 2) - (img.Height / 2);
+            }
+            else
+            {
+                // 寬跟高都大等於背板
+            }
+            int drawPositionXInt = Convert.ToInt32(drawPositionX);
+            int drawPositionYInt = Convert.ToInt32(drawPositionY);
             // 判斷使用者選取borderStyle
-            if(borderStyle == "StraightStyle")
+            if (borderStyle == "StraightStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1150, ((int)1500));//相片四周刷一層黑色邊框，需要調尺寸
-                g.DrawImage(img, 0, 0, img.Width, img.Height);
+                g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
                 g.DrawImage(imgBorder, 0, 0, 1280, 1600);
-            }                
-            else if(borderStyle == "HorizontalStyle")
+            }
+            else if (borderStyle == "HorizontalStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1480, ((int)1100));//相片四周刷一層黑色邊框，需要調尺寸
-                g.DrawImage(img, 0, 0, img.Width, img.Height);
+                g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
                 g.DrawImage(imgBorder, 0, 0, 1478, 1108);
             }
-                
+
             GC.Collect();
             string saveResultImagePath = Path.Combine(HttpContext.Current.Server.MapPath("~/tempPhoto/result"), resultFileName + ".png");
             string saveResultImageFileName = resultFileName + ".png";
