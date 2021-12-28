@@ -159,22 +159,9 @@ namespace photoEditSystem.Component
             if (bmp.Width > maxPx || bmp.Height > maxPx)
             //如果圖片的寬大於最大值或高大於最大值就往下執行  
             {
-
-                if (bmp.Width >= bmp.Height)
-                //圖片的寬大於圖片的高  
-                {
-
-                    newHeight = Convert.ToInt32((Convert.ToDouble(maxPx) / Convert.ToDouble(bmp.Width)) * Convert.ToDouble(bmp.Height));
-                    //設定修改後的圖高  
-                    newWidth = maxPx;
-                }
-                else
-                {
-
-                    newWidth = Convert.ToInt32((Convert.ToDouble(maxPx) / Convert.ToDouble(bmp.Height)) * Convert.ToDouble(bmp.Width));
-                    //設定修改後的圖寬  
-                    newHeight = maxPx;
-                }
+                newWidth = Convert.ToInt32((Convert.ToDouble(maxPx) / Convert.ToDouble(bmp.Height)) * Convert.ToDouble(bmp.Width));
+                //設定修改後的圖寬  
+                newHeight = maxPx;               
             }
             else
             {//圖片沒有超過設定值，不執行縮圖   
@@ -194,7 +181,7 @@ namespace photoEditSystem.Component
         /// <param name="image"></param>
         /// <param name="maxWidth"></param>
         /// <returns></returns>
-        public int[] GetThumbPic_Width(Bitmap bmp, int maxWidth)
+        public int[] GetThumbPic_Width(Bitmap bmp, int maxWidth, int picWidth, int picHigh)
         {
             //要回傳的結果
             int newWidth = 0;
@@ -203,18 +190,17 @@ namespace photoEditSystem.Component
             if (bmp.Width > maxWidth)
             //如果圖片的寬大於最大值 
             {
-
                 //等比例的圖高
                 newHeight = Convert.ToInt32((Convert.ToDouble(maxWidth) / Convert.ToDouble(bmp.Width)) * Convert.ToDouble(bmp.Height));
                 //設定修改後的圖寬  
-                newWidth = maxWidth;
-
+                newWidth = maxWidth;                
             }
             else
-            {//圖片寬沒有超過設定值，不執行縮圖  
+            {
 
+                //圖片寬沒有超過設定值，不執行縮圖
                 newHeight = bmp.Height;
-                newWidth = bmp.Width;
+                newWidth = bmp.Width;               
             }
 
             int[] newWidthAndfixHeight = { newWidth, newHeight };
@@ -229,26 +215,26 @@ namespace photoEditSystem.Component
         /// <param name="bmp"></param>
         /// <param name="maxHeight"></param>
         /// <returns></returns>
-        public int[] GetThumbPic_Height(Bitmap bmp, int maxHeight)
+        public int[] GetThumbPic_Height(Bitmap bmp, int maxHeight, int picWidth, int picHigh)
         {
             //要回傳的值
             int newWidth = 0;
             int newHeight = 0;
-
+           
             if (bmp.Height > maxHeight)
             //如果圖片的高大於最大值 
             {
                 //等比例的寬
                 newWidth = Convert.ToInt32((Convert.ToDouble(maxHeight) / Convert.ToDouble(bmp.Height)) * Convert.ToDouble(bmp.Width));
                 //圖高固定  
-                newHeight = maxHeight;
-
+                newHeight = maxHeight;                
             }
             else
-            {//圖片的高沒有超過設定值 
-
+            {
+                //圖片的高沒有超過設定值
                 newHeight = bmp.Height;
                 newWidth = bmp.Width;
+                
             }
 
             int[] newWidthAndfixHeight = { newWidth, newHeight };
@@ -289,17 +275,18 @@ namespace photoEditSystem.Component
         /// <param name="srcImagePath">來源圖片的路徑</param>
         /// <param name="widthMaxPix">超過多少像素就要等比例縮圖</param>
         /// <param name="saveThumbFilePath">縮圖的儲存檔案路徑</param>
-        public void SaveThumbPicWidth(string srcImagePath, int widthMaxPix, string saveThumbFilePath)
+        public void SaveThumbPicWidth(string srcImagePath, int widthMaxPix, string saveThumbFilePath, int picWidth, int picHigh)
         {
             //讀取原始圖片 
             using (FileStream fs = new FileStream(srcImagePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 //取得原始圖片 
                 Bitmap bmpOld = new Bitmap(fs);
-
+                if (bmpOld.Width != picWidth || bmpOld.Height != picHigh)
+                    bmpOld.RotateFlip(RotateFlipType.Rotate90FlipNone);
                 //圖片寬高 
                 // 計算維持比例的縮圖大小 
-                int[] thumbnailScaleWidth = GetThumbPic_Width(bmpOld, widthMaxPix);
+                int[] thumbnailScaleWidth = GetThumbPic_Width(bmpOld, widthMaxPix, picWidth, picHigh);
                 int newWidth = thumbnailScaleWidth[0];
                 int newHeight = thumbnailScaleWidth[1];
 
@@ -316,16 +303,17 @@ namespace photoEditSystem.Component
         /// <param name="srcImagePath">來源圖片的路徑</param>
         /// <param name="heightMaxPix">超過多少像素就要等比例縮圖</param>
         /// <param name="saveThumbFilePath">縮圖的儲存檔案路徑</param>
-        public void SaveThumbPicHeight(string srcImagePath, int heightMaxPix, string saveThumbFilePath)
+        public void SaveThumbPicHeight(string srcImagePath, int heightMaxPix, string saveThumbFilePath,int picWidth, int picHigh)
         {
             //讀取原始圖片 
             using (FileStream fs = new FileStream(srcImagePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 //取得原始圖片 
                 Bitmap bmpOld = new Bitmap(fs);
-                System.Drawing.Image img = System.Drawing.Image.FromStream(fs);
+                if (bmpOld.Width != picWidth || bmpOld.Height != picHigh)
+                    bmpOld.RotateFlip(RotateFlipType.Rotate90FlipNone);
                 // 計算維持比例的縮圖大小 
-                int[] thumbnailScaleWidth = GetThumbPic_Height(bmpOld, heightMaxPix);
+                int[] thumbnailScaleWidth = GetThumbPic_Height(bmpOld, heightMaxPix, picWidth, picHigh);
                 int newWidth = thumbnailScaleWidth[0];
                 int newHeight = thumbnailScaleWidth[1];
 

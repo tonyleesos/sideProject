@@ -49,7 +49,7 @@ namespace photoEditSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UploadImg(FormCollection collection, HttpPostedFileBase File1, string borderStyle)
+        public ActionResult UploadImg(FormCollection collection, HttpPostedFileBase File1, string borderStyle,int picWidth,int picHigh)
         {
             try
             {
@@ -88,36 +88,41 @@ namespace photoEditSystem.Controllers
                 // 取得圖片長寬
                 int widthPic = directoryPath.getPicWidth(savedPhotoName);
                 int highPic = directoryPath.getPicHigh(savedPhotoName);
+                if(widthPic != picWidth || highPic != picHigh)
+                {
+                    widthPic = picWidth;
+                    highPic = picHigh;
+                }
                 // 判斷使用者選擇外框模式
                 if (borderStyle == "StraightStyle" && (highPic >= widthPic))
                 {
                     // 使用者選擇直框，圖片是直的
-                    directoryPath.SaveThumbPicHeight(savedPhotoName, 1600, thumbPicOutPath);                    
+                    directoryPath.SaveThumbPicHeight(savedPhotoName, 1600, thumbPicOutPath, picWidth, picHigh);                    
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight.png");
                 }
                 else if (borderStyle == "HorizontalStyle" && (widthPic >= highPic))
                 {
                     // 使用者選擇橫框，圖片是橫的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1478, thumbPicOutPath);                   
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1478, thumbPicOutPath, picWidth, picHigh);                   
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal.png");
                 }
                 else if (borderStyle == "StraightStyle" && (widthPic > highPic))
                 {
                     // 使用者選擇直框，圖片是橫的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1280, thumbPicOutPath);
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1280, thumbPicOutPath, picWidth, picHigh);
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight.png");
                 }
                 else if (borderStyle == "HorizontalStyle" && (highPic > widthPic))
                 {
                     // 使用者選擇橫框，圖片是直的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1108, thumbPicOutPath);
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1108, thumbPicOutPath, picWidth, picHigh);
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal.png");
                 }
                 savedPhotoName = thumbPicOutPath; // 更新路徑
                 // 合併外框              
                 string resultPathFileName = directoryPath.CombinImage(savedPhotoName, savedBorderPhotoName, borderStyle, imgBackgorund);  // 照片 相框  
                 //string resultPathFileName = directoryPath.CombinImage(savedBorderPhotoName, savedPhotoName, borderStyle);  // 相框  照片
-                TempData["Message"] = "上傳成功";
+                TempData["Message"] = "合成完畢";
                 // 儲存檔名(照片、外框、結果)
                 directoryPath.file1PathFileName = photoName;
                 directoryPath.fileBorderPathFileName = borderName;
