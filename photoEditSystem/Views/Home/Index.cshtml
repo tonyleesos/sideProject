@@ -94,6 +94,30 @@
                 }
             }
 
+            function checkFile() {
+                var f = document.FileForm;
+                var re = /\.(jpg|gif)$/i;  //允許的圖片副檔名
+                if (isCheckImageType && !re.test(f.file1.value)) {
+                    alert("只允許上傳JPG或GIF影像檔");
+                } else {
+                    var img = new Image();
+                    img.onload = checkImage;
+                    img.src = f.file1.value;
+                }
+            }
+
+            function checkImage() {
+                if (isCheckImageWidth && this.width > ImageWidthLimit) {
+                    showMessage('寬度', 'px', this.width, ImageWidthLimit);
+                } else if (isCheckImageHeight && this.height > ImageHeightLimit) {
+                    showMessage('高度', 'px', this.height, ImageHeightLimit);
+                } else if (isCheckImageSize && this.fileSize > ImageSizeLimit) {
+                    showMessage('檔案大小', 'kb', this.fileSize / 1000, ImageSizeLimit / 1000);
+                } else {
+                    document.FileForm.submit();
+                }
+            }
+
             // 下載檔案
             $('.downloadFile').click(function () {
                 downloadIamge("#photoResult", new Date().toJSON().slice(0, 10))

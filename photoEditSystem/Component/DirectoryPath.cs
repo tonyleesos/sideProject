@@ -84,12 +84,14 @@ namespace photoEditSystem.Component
             if (borderStyle == "StraightStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1150, ((int)1500));//相片四周刷一層黑色邊框，需要調尺寸
+                g.DrawImage(imgBack, 0, 0, 1280, 1600);
                 g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
                 g.DrawImage(imgBorder, 0, 0, 1280, 1600);
             }
             else if (borderStyle == "HorizontalStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1480, ((int)1100));//相片四周刷一層黑色邊框，需要調尺寸
+                g.DrawImage(imgBack, 0, 0, 1478, 1108);
                 g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
                 g.DrawImage(imgBorder, 0, 0, 1478, 1108);
             }
@@ -269,7 +271,6 @@ namespace photoEditSystem.Component
             {
                 //取得原始圖片 
                 Bitmap bmpOld = new Bitmap(fs);
-
                 // 計算維持比例的縮圖大小 
                 int[] thumbnailScaleWidth = GetThumbPic_WidthAndHeight(bmpOld, maxPix);
                 int newWidth = thumbnailScaleWidth[0];
@@ -322,7 +323,7 @@ namespace photoEditSystem.Component
             {
                 //取得原始圖片 
                 Bitmap bmpOld = new Bitmap(fs);
-
+                System.Drawing.Image img = System.Drawing.Image.FromStream(fs);
                 // 計算維持比例的縮圖大小 
                 int[] thumbnailScaleWidth = GetThumbPic_Height(bmpOld, heightMaxPix);
                 int newWidth = thumbnailScaleWidth[0];
@@ -330,11 +331,31 @@ namespace photoEditSystem.Component
 
                 // 產生縮圖 
                 Bitmap bmpThumb = new Bitmap(bmpOld, newWidth, newHeight);
+
                 bmpThumb.Save(saveThumbFilePath);
 
             }//end using 
         }
 
         #endregion
+
+        public int getPicWidth(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+                int width = image.Width;               
+                return width;
+            }         
+        }
+        public int getPicHigh(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                System.Drawing.Image image = System.Drawing.Image.FromStream(fs);
+                int high = image.Height;
+                return high;
+            }
+        }
     }
 }
