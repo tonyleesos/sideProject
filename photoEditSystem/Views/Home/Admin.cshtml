@@ -13,18 +13,18 @@
             <thead>
                 <tr>
                     <th scope="col" width="10%">序號</th>
-                    <th scope="col" width="60%">照片</th>
+                    <th scope="col" width="80%">照片</th>
                     <th scope="col">功能</th>
                 </tr>
             </thead>
             <tbody>
-                @{ int i = 0;}
+                @{ int i = 1;}
                 @foreach (var item in ViewBag.filePicPathList)
                 {
                     <tr>
                         <th scope="row">@i</th>
                         <td>
-                            <img id="photoResult" src="@item" alt="@item" style="width: 15%; border: 2px gray solid;" />
+                            <img id="photoResult" src="@item" alt="@item" style="width: 40%; border: 2px gray solid;" />
                         </td>
                         <td>
                             <button class="btn btn-info download" value="@item">下載</button>

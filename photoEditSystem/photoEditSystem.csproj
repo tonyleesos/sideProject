@@ -2024,14 +2024,14 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="tempPhoto\border\Birthday_border_horizontal.png" />
+    <Content Include="tempPhoto\border\Birthday_border_straight.png" />
     <Content Include="tempPhoto\border\imageBackgroundHorizontal.png" />
     <Content Include="tempPhoto\border\imageBackgroundHorizontal_White.png" />
     <Content Include="tempPhoto\border\imageBackgroundStraight.png" />
     <Content Include="tempPhoto\border\imageBackgroundStraight_White.png" />
-    <Content Include="tempPhoto\border\no-bghorizontal.png" />
-    <Content Include="tempPhoto\border\no-bghorizontal_TEMP.png" />
-    <Content Include="tempPhoto\border\no-bgstraight.png" />
-    <Content Include="tempPhoto\border\no-bgstraight_TEMP.png" />
+    <Content Include="tempPhoto\border\Spider_border_horizontal.png" />
+    <Content Include="tempPhoto\border\Spider_border_straight.png" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

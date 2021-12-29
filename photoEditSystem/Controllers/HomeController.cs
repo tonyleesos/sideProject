@@ -18,8 +18,8 @@ namespace photoEditSystem.Controllers
             if (TempData["Message"] != null)
             {
                 // border style
-                ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/no-bgstraight.png";
-                ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/no-bghorizontal.png";
+                ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/Birthday_border_straight.png";
+                ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/Spider_border_horizontal.png";
                 // reslut pic
                 ViewBag.resultPathFileSrc = (directoryPath.resultPathFileName != null) ? "tempPhoto/result/" + directoryPath.resultPathFileName : "";
             }
@@ -27,8 +27,8 @@ namespace photoEditSystem.Controllers
             {
                 // 第一次loading進來
                 // border style
-                ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/no-bgstraight.png";
-                ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/no-bghorizontal.png";
+                ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/Birthday_border_straight.png";
+                ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/Spider_border_horizontal.png";
             }
             return View();
         }
@@ -37,7 +37,7 @@ namespace photoEditSystem.Controllers
         {
             // 讀取資料夾
             string loadPicPathFilder = Server.MapPath("~/tempPhoto/result"); // 存合成後圖片路徑           
-            string FileNoExt, FileWithExt = "",imageFileUrl="";
+            string FileNoExt, FileWithExt = "",imageFileUrl="", FileExtension = "";
             string[] files = Directory.GetFiles(loadPicPathFilder);
             List<string> filePicPathList = new List<string>();
             foreach (string filename in files)
@@ -47,8 +47,13 @@ namespace photoEditSystem.Controllers
                 FileNoExt = Path.GetFileNameWithoutExtension(filename);
                 //檔名(包含副檔名)(不含路徑)例：abc.pdf
                 FileWithExt = Path.GetFileName(filename);
-                imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt;
-                filePicPathList.Add(imageFileUrl);
+                FileExtension = Path.GetExtension(filename);
+                if(FileExtension == ".jpg" || FileExtension == ".png")
+                {
+                    imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt;
+                    filePicPathList.Add(imageFileUrl);
+                }
+                
             }
 
             ViewBag.filePicPathList = filePicPathList;
@@ -81,18 +86,7 @@ namespace photoEditSystem.Controllers
                 // 設定儲存外框路徑(含檔名)
                 string savedBorderPhotoName = "";
                 string borderName = "";
-                if (borderStyle == "StraightStyle")
-                {
-                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "no-bgstraight.png");
-                    borderName = "no-bgstraight.png";
-                }
-
-                else if (borderStyle == "HorizontalStyle")
-                {
-                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "no-bghorizontal.png");
-                    borderName = "no-bghorizontal.png";
-                }
-
+               
                 // 儲存檔案
                 File1.SaveAs(savedPhotoName);
 
@@ -103,6 +97,7 @@ namespace photoEditSystem.Controllers
                 // 取得圖片長寬
                 int widthPic = directoryPath.getPicWidth(savedPhotoName);
                 int highPic = directoryPath.getPicHigh(savedPhotoName);
+                // 檢查有些手機直版拍照系統會抓錯長、寬
                 if(widthPic != picWidth || highPic != picHigh)
                 {
                     widthPic = picWidth;
@@ -111,27 +106,45 @@ namespace photoEditSystem.Controllers
                 // 判斷使用者選擇外框模式
                 if (borderStyle == "StraightStyle" && (highPic >= widthPic))
                 {
-                    // 使用者選擇直框，圖片是直的
-                    directoryPath.SaveThumbPicHeight(savedPhotoName, 1025, thumbPicOutPath, picWidth, picHigh);                    
+                    //// 使用者選擇直框(birdthday)，圖片是直的
+                    // 設定儲存外框路徑(含檔名)
+                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "Birthday_border_straight.png");
+                    borderName = "Birthday_border_straight.png";
+                    // 縮放比例跟背板一樣大小
+                    directoryPath.SaveThumbPicHeight(savedPhotoName, directoryPath.getPicHigh(savedBorderPhotoName), thumbPicOutPath, picWidth, picHigh);                    
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight_White.png");
                 }
                 else if (borderStyle == "HorizontalStyle" && (widthPic >= highPic))
                 {
-                    // 使用者選擇橫框，圖片是橫的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 1024, thumbPicOutPath, picWidth, picHigh);                   
+                    //// 使用者選擇橫框(spider)，圖片是橫的
+                    // 設定儲存外框路徑(含檔名)
+                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "Spider_border_horizontal.png");
+                    borderName = "Spider_border_horizontal.png";
+                    // 縮放比例跟背板一樣大小
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, directoryPath.getPicWidth(savedBorderPhotoName), thumbPicOutPath, picWidth, picHigh);                   
                     imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal_White.png");
                 }
                 else if (borderStyle == "StraightStyle" && (widthPic > highPic))
                 {
-                    // 使用者選擇直框，圖片是橫的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 683, thumbPicOutPath, picWidth, picHigh);
-                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight_White.png");
+                    //// 使用者選擇直框(birdthday)，圖片是橫的
+                    // 設定儲存外框路徑(含檔名)
+                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "Birthday_border_horizontal.png");
+                    borderName = "Birthday_border_horizontal.png";
+                    // 縮放比例跟背板一樣大小
+                    directoryPath.SaveThumbPicWidth(savedPhotoName, directoryPath.getPicWidth(savedBorderPhotoName), thumbPicOutPath, picWidth, picHigh);
+                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal_White.png");
+                    borderStyle = "HorizontalStyle";
                 }
                 else if (borderStyle == "HorizontalStyle" && (highPic > widthPic))
                 {
-                    // 使用者選擇橫框，圖片是直的
-                    directoryPath.SaveThumbPicWidth(savedPhotoName, 683, thumbPicOutPath, picWidth, picHigh);
-                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundHorizontal_White.png");
+                    //// 使用者選擇橫框(spider)，圖片是直的
+                    // 設定儲存外框路徑(含檔名)
+                    savedBorderPhotoName = Path.Combine(Server.MapPath("~/tempPhoto/border"), "Spider_border_straight.png");
+                    borderName = "Spider_border_straight.png";
+                    // 縮放比例跟背板一樣大小
+                    directoryPath.SaveThumbPicHeight(savedPhotoName, directoryPath.getPicHigh(savedBorderPhotoName), thumbPicOutPath, picWidth, picHigh);
+                    imgBackgorund = Path.Combine(Server.MapPath("~/tempPhoto/border"), "imageBackgroundStraight_White.png");
+                    borderStyle = "StraightStyle";
                 }
                 savedPhotoName = thumbPicOutPath; // 更新路徑
                 // 合併外框              
