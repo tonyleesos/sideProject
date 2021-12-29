@@ -1,0 +1,66 @@
+﻿@{
+    Layout = "~/Views/Shared/_PhotoEditLayoutPage.cshtml";
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>合成照片管理區</title>
+    </head>
+    <body>
+        <div style="text-align: right; font-size: 20px; ">
+            @Html.ActionLink("上傳頁面", "Index")
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" width="10%">序號</th>
+                    <th scope="col" width="60%">照片</th>
+                    <th scope="col">功能</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 0;}
+                @foreach (var item in ViewBag.filePicPathList)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>
+                            <img id="photoResult" src="@item" alt="@item" style="width: 15%; border: 2px gray solid;" />
+                        </td>
+                        <td>
+                            <button class="btn btn-info download" value="@item">下載</button>
+                        </td>
+                    </tr>
+
+                    i++;
+                }
+            </tbody>
+        </table>
+        @*<input type="file" id="selectFiles" onchange="dealSelectFiles()" multiple webkitdirectory>
+        <canvas id="myCanvas" width=1440 height=900></canvas>*@
+
+    </body>
+</html>
+
+<script>
+    $(function () {
+        // 下載檔案
+        $('.download').click(function () {
+            var btnValue = this.value;
+            var imgObj = $(this).closest('tr').find('img')[0] // 按鈕的上一層找tr 往下找到img
+            downloadIamge(imgObj, btnValue)
+        });
+        function downloadIamge(selector, name) {
+            // 通過選擇器獲取img元素
+            // var img = document.querySelector(selector)
+            // 將圖片的src屬性作為URL地址
+            var url = selector.src
+            var a = document.createElement('a')
+            var event = new MouseEvent('click')
+
+            a.download = name || '下載圖片名稱'
+            a.href = url
+
+            a.dispatchEvent(event)
+        }
+    })
+</script>

@@ -25,6 +25,9 @@
         @Html.AntiForgeryToken()
         <div class="wrapper row3">
             <section class="hoc container clear">
+                <div style="text-align: right; font-size: 20px; ">
+                    @Html.ActionLink("管理頁面", "Admin")
+                </div>
                 <div class="sectiontitle">
                     <span class="label-info form-group" style="font-size: 20px; color: orangered">請上傳圖片:</span>
                     <input id="File1" type="file" name="File1">
@@ -34,8 +37,9 @@
                     <span id="fn"></span>
                     <span id="fs"></span>
                     <br />
-                    @Html.Hidden("picHigh",0)
-                    @Html.Hidden("picWidth",0)
+                    @Html.Hidden("picHigh", 0)
+                    @Html.Hidden("picWidth", 0)
+                    <br />
                 </div>
                 <div class="center">
                     <span class="label-info form-group" style="font-size:20px;color:orangered">請選擇外框圖:</span>
@@ -48,9 +52,8 @@
                         <img id="imgBorder" src="@ViewBag.borderHorizontalStylePathFileSrc2" alt="" style="width: 40%; border: 2px gray solid;" />
                         <br />
                     </div>
-                    <button type="button" class="btn btn-primary mt-4 mb-4" onclick="check()">上傳</button>
-                    <br />
-                    <button type="submit" class="btn btn-primary mt-4" >合成</button>
+                    
+                    <button type="button" class="btn btn-primary mt-4" onclick="check()">上傳</button>
                 </div>
                 
                 <div class="sectiontitle">
@@ -99,6 +102,7 @@
                         $('input[name="picWidth"]').val(width);
                         $('input[name="picHigh"]').val(height);
                         alert("上傳成功");
+                        document.FileForm.submit();
                     };
                     image.src = data;
                 };

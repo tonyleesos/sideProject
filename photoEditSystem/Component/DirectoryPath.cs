@@ -84,16 +84,16 @@ namespace photoEditSystem.Component
             if (borderStyle == "StraightStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1150, ((int)1500));//相片四周刷一層黑色邊框，需要調尺寸
-                g.DrawImage(imgBack, 0, 0, 1280, 1600);
+                g.DrawImage(imgBack, 0, 0, 683, 1024); // 背板長寬
                 g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
-                g.DrawImage(imgBorder, 0, 0, 1280, 1600);
+                g.DrawImage(imgBorder, 0, 0, 683, 1024); // 背板長寬
             }
             else if (borderStyle == "HorizontalStyle")
             {
                 //g.FillRectangle(Brushes.Black, -50, -50, (int)1480, ((int)1100));//相片四周刷一層黑色邊框，需要調尺寸
-                g.DrawImage(imgBack, 0, 0, 1478, 1108);
+                g.DrawImage(imgBack, 0, 0, 1024, 683); // 背板長寬
                 g.DrawImage(img, drawPositionXInt, drawPositionYInt, img.Width, img.Height);
-                g.DrawImage(imgBorder, 0, 0, 1478, 1108);
+                g.DrawImage(imgBorder, 0, 0, 1024, 683); // 背板長寬
             }
 
             GC.Collect();
