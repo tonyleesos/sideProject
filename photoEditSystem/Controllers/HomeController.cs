@@ -50,7 +50,8 @@ namespace photoEditSystem.Controllers
                 FileExtension = Path.GetExtension(filename);
                 if(FileExtension == ".jpg" || FileExtension == ".png")
                 {
-                    imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt;
+                    imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt; // 發布打開
+                    // imageFileUrl = "/tempPhoto/result/" + FileWithExt;
                     filePicPathList.Add(imageFileUrl);
                 }
                 
@@ -59,7 +60,21 @@ namespace photoEditSystem.Controllers
             ViewBag.filePicPathList = filePicPathList;
             return View();
         }
-
+        public ActionResult DeletePic(string deleteFileName)
+        {
+            string strPhysicalFolder = System.Web.HttpContext.Current.Server.MapPath("~/tempPhoto/result/");
+            string strFileFullPath = strPhysicalFolder + deleteFileName;
+            if (System.IO.File.Exists(strFileFullPath))
+            {
+                System.IO.File.Delete(strFileFullPath);
+                TempData["Message"] = "刪除成功";
+            }
+            else
+            {
+                TempData["Message"] = "刪除失敗";
+            }
+            return RedirectToAction("Admin");
+        }
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

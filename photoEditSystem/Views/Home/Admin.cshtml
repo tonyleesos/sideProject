@@ -2,44 +2,56 @@
     Layout = "~/Views/Shared/_PhotoEditLayoutPage.cshtml";
 }
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>合成照片管理區</title>
-    </head>
-    <body>
-        <div style="text-align: right; font-size: 20px; ">
-            @Html.ActionLink("上傳頁面", "Index")
-        </div>
-        <table class="table">
-            <thead>
+<head>
+    <title>合成照片管理區</title>
+</head>
+<body>
+    <div style="text-align: right; font-size: 20px; ">
+        @Html.ActionLink("上傳頁面", "Index")
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="10%">序號</th>
+                <th scope="col" width="70%">照片</th>
+                <th scope="col">功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int i = 1;}
+            @foreach (var item in ViewBag.filePicPathList)
+            {
                 <tr>
-                    <th scope="col" width="10%">序號</th>
-                    <th scope="col" width="80%">照片</th>
-                    <th scope="col">功能</th>
+                    <th scope="row">@i</th>
+                    <td>
+                        <img id="photoResult" src="@item" alt="@item" style="width: 40%; border: 2px gray solid;" />
+                    </td>
+                    <td>
+                        <button class="btn btn-info download mr-4" value="@item">下載</button>
+                        <button class="btn btn-info delete" value="@item">刪除</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @{ int i = 1;}
-                @foreach (var item in ViewBag.filePicPathList)
-                {
-                    <tr>
-                        <th scope="row">@i</th>
-                        <td>
-                            <img id="photoResult" src="@item" alt="@item" style="width: 40%; border: 2px gray solid;" />
-                        </td>
-                        <td>
-                            <button class="btn btn-info download" value="@item">下載</button>
-                        </td>
-                    </tr>
 
-                    i++;
-                }
-            </tbody>
-        </table>
-        @*<input type="file" id="selectFiles" onchange="dealSelectFiles()" multiple webkitdirectory>
+                i++;
+            }
+        </tbody>
+    </table>
+    @*<input type="file" id="selectFiles" onchange="dealSelectFiles()" multiple webkitdirectory>
         <canvas id="myCanvas" width=1440 height=900></canvas>*@
 
-    </body>
+</body>
 </html>
+
+<!-- Code injected by live-server -->
+@*成功訊息*@
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+            var message = @Html.Raw(Json.Encode(TempData["Message"]));
+            alert(message);
+            $("footer").show();
+    </script>
+}
 
 <script>
     $(function () {
@@ -62,5 +74,13 @@
 
             a.dispatchEvent(event)
         }
+
+        $('.delete').click(function () {
+            var btnValue = this.value;
+            var imgObj = $(this).closest('tr').find('img')[0] // 按鈕的上一層找tr 往下找到img
+            var imgObjTEmp = btnValue.split("/");
+            var imgFileName = imgObjTEmp[imgObjTEmp.length-1]
+            window.location.href = '@Url.Action("DeletePic")' + "?deleteFileName=" + imgFileName;
+        });
     })
 </script>
