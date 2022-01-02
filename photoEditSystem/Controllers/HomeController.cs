@@ -50,8 +50,8 @@ namespace photoEditSystem.Controllers
                 FileExtension = Path.GetExtension(filename);
                 if(FileExtension == ".jpg" || FileExtension == ".png")
                 {
-                    imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt; // 發布打開
-                    // imageFileUrl = "/tempPhoto/result/" + FileWithExt;
+                    // imageFileUrl = "http://if186.aca.ntu.edu.tw/phtopedit/tempPhoto/result/" + FileWithExt; // 發布打開
+                    imageFileUrl = "/tempPhoto/result/" + FileWithExt;
                     filePicPathList.Add(imageFileUrl);
                 }
                 
