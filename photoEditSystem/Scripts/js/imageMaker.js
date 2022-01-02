@@ -110,15 +110,13 @@ function getEletAngle(eletClass) {
 
 //操作移動
 function poloImgMoving(area, showPositionInfo) {
-    const element = document.getElementsByClassName(area);
-    for (var i = 0; i < element.length; i++) {
-        element[i].addEventListener('click', (e) => {
-            const xPos = e.pageX - element[0].offsetLeft;
-            const yPos = e.pageY - element[0].offsetTop;
-            document.getElementsByClassName(showPositionInfo).innerHTML = `X軸: ${xPos}, Y軸: ${yPos}`;
-            document.getElementById('img1').style.left = `${xPos}px`;
-            document.getElementById('img1').style.top = `${yPos}px`;
-        }, false);
-    }
+    const element = document.getElementById(area);
+    element.addEventListener('click', (e) => {
+        const xPos = e.pageX - element.offsetLeft;
+        const yPos = e.pageY - element.offsetTop;
+        document.getElementById(showPositionInfo).innerHTML = `X軸: ${xPos}, Y軸: ${yPos}`;
+        document.getElementById('img1').style.left = `${xPos}px`;
+        document.getElementById('img1').style.top = `${yPos}px`;
+    }, false);
 
 }
