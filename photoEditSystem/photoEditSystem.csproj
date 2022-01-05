@@ -2027,6 +2027,7 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="tempPhoto\border\Birthday_border_horizontal.png" />
     <Content Include="tempPhoto\border\Birthday_border_straight.png" />
+    <Content Include="tempPhoto\border\ICK2lr1.jpeg" />
     <Content Include="tempPhoto\border\imageBackgroundHorizontal.png" />
     <Content Include="tempPhoto\border\imageBackgroundHorizontal_White.png" />
     <Content Include="tempPhoto\border\imageBackgroundStraight.png" />

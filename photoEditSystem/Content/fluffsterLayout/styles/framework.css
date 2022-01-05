@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /*
 Template Name: Fluffster
 Author: <a href="https://www.os-templates.com/">OS Templates</a>
@@ -10,7 +10,7 @@ File: Framework CSS
 */
 
 html{overflow-y:scroll; overflow-x:hidden;}
-html, body{margin:0; padding:0; font-size:14px; line-height:1.6em;}
+html, body{/*margin:0; padding:0;*/ font-size:14px; line-height:1.6em;}
 
 *, *::before, *::after{box-sizing:border-box;}
 

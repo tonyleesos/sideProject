@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /*
 Template Name: Fluffster
 Author: <a href="https://www.os-templates.com/">OS Templates</a>
@@ -55,7 +55,7 @@ File: Layout CSS
 
 /* Page Intro
 --------------------------------------------------------------------------------------------------------------- */
-#pageintro{background-size:100% 75%;/* This squashes the image - so only use a pattern of sorts */ text-align:center;}
+#pageintro{background-size:100% 100%;/* This squashes the image - so only use a pattern of sorts */ text-align:center;}
 #pageintro figure{padding-bottom:20px;}/* Required for the box-shadow on the image */
 #pageintro figcaption{margin:0; padding:100px 0; font-size:4rem;}
 

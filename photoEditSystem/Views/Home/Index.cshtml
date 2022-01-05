@@ -15,15 +15,15 @@
 
 <body id="top">
     @*@Html.Partial("_HomeTitlePartialView")*@
-    <div id="pageintro" class="wrapper row1 bgded" style="background-image: url('https://i.imgur.com/zO4MHwT.png'); ">
+    <div id="pageintro" class="wrapper row1 bgded" style="background-image: url('https://i.imgur.com/zO4MHwT.png');">
         <figure class="hoc clear">
             <figcaption class="heading"></figcaption>
         </figure>
     </div>
-    @using (Html.BeginForm("UploadImg", "Home", FormMethod.Post, new { enctype = "multipart/form-data", name = "FileForm" }))
+    @using (Html.BeginForm("UploadImg", "Home", FormMethod.Post, new { enctype = "multipart/form-data", name = "FileForm"}))
     {
         @Html.AntiForgeryToken()
-        <div class="wrapper row3">
+        <div class="wrapper row3" style="background-image: url('https://i.imgur.com/DZKtfNH.jpg');background-size:cover;">
 
             <div style="text-align: right; font-size: 20px; ">
                 @Html.ActionLink("管理頁面", "Admin")
@@ -39,10 +39,10 @@
                         <img id="imgBorder" src="@ViewBag.borderHorizontalStylePathFileSrc2" alt="" style="width: 30%; border: 2px gray solid;" />
                     </div>
                     <div id="editArea" class="col " style="position: relative; text-align: center;">
-                        <h1 id="showPositionInfo"></h1>
+                        @*<h1 id="showPositionInfo"></h1>
                         <img class="img imgEdit" id="img1" src="@ViewBag.File1PathFileName" alt="" style="z-index: 0; position: absolute; width: 30%;" />
                         <img id="imgBorder" class="borderStraight" src="@ViewBag.borderStraightStylePathFileSrc" alt="" style="border: 2px gray solid; z-index: 1; position: absolute; width: 50%; display: none" />
-                        <img id="imgBorder" class="borderHorizontal" src="@ViewBag.borderHorizontalStylePathFileSrc2" alt="" style="border: 2px gray solid; z-index: 1; position: absolute; width: 50%; display: none" />
+                        <img id="imgBorder" class="borderHorizontal" src="@ViewBag.borderHorizontalStylePathFileSrc2" alt="" style="border: 2px gray solid; z-index: 1; position: absolute; width: 50%; display: none " />*@
                     </div>
                 </div>
                 <div class="sectiontitle">
@@ -72,8 +72,10 @@
         </div>
     }
 
+    <div style="background-color:black">
+        <a id="backtotop" href="#top" class=""><i class="fas fa-chevron-up"></i></a>
+    </div>
 
-    <a id="backtotop" href="#top" class=""><i class="fas fa-chevron-up"></i></a>
     <script src="~/Scripts/js/imageMaker.js"></script>
     <!-- Code injected by live-server -->
     @*成功訊息*@

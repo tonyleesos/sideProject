@@ -21,7 +21,7 @@ namespace photoEditSystem.Controllers
                 ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/Birthday_border_straight.png";
                 ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/Spider_border_horizontal.png";
                 // reslut pic
-                ViewBag.resultPathFileSrc = (directoryPath.resultPathFileName != null) ? "tempPhoto/result/" + directoryPath.resultPathFileName : "";
+                ViewBag.resultPathFileSrc = (directoryPath.resultPathFileName != null) ? "tempPhoto/result/" + directoryPath.resultPathFileName : "tempPhoto/border/ICK2lr1.jpeg";
             }
             else
             {
@@ -29,6 +29,7 @@ namespace photoEditSystem.Controllers
                 // border style
                 ViewBag.borderStraightStylePathFileSrc = "tempPhoto/border/Birthday_border_straight.png";
                 ViewBag.borderHorizontalStylePathFileSrc2 = "tempPhoto/border/Spider_border_horizontal.png";
+                ViewBag.resultPathFileSrc = (directoryPath.resultPathFileName != null) ? "tempPhoto/result/" + directoryPath.resultPathFileName : "tempPhoto/border/ICK2lr1.jpeg";
             }
             return View();
         }
