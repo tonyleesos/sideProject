@@ -111,9 +111,10 @@ function getEletAngle(eletClass) {
 //操作移動
 function poloImgMoving(area, showPositionInfo) {
     const element = document.getElementById(area);
+    const elementHeader = document.getElementById('pageintro');
     element.addEventListener('click', (e) => {
         const xPos = e.pageX - element.offsetLeft;
-        const yPos = e.pageY - element.offsetTop;
+        const yPos = e.pageY - element.offsetTop - (elementHeader.offsetTop + elementHeader.offsetHeight);
         document.getElementById(showPositionInfo).innerHTML = `X軸: ${xPos}, Y軸: ${yPos}`;
         document.getElementById('img1').style.left = `${xPos}px`;
         document.getElementById('img1').style.top = `${yPos}px`;
